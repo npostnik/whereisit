@@ -1,0 +1,66 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:ce="http://typo3.org/ns/Npostnik/Ceoverview/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:asset.css identifier="whereisit" href="EXT:whereisit/Resources/Public/Css/styles.css" />
+
+<div class="whereisit">
+    <f:form action="list" method="post">
+        <div class="whereisit-filter__row">
+            <div class="whereisit-filter__col">
+                <label class="form-label">Inhaltselement</label>
+                <f:form.select options="{cTypeOptions}"
+                               name="cType"
+                               value="{cType}"
+                               prependOptionLabel="Alle" prependOptionValue=""
+                               optionValueField="value" optionLabelField="label"/>
+            </div>
+            <div class="whereisit-filter__col">
+                <label class="form-label">Plugin</label>
+                <f:form.select options="{listTypeOption}"
+                               name="listType"
+                               value="{listType}"
+                               prependOptionLabel="Alle" prependOptionValue=""
+                               optionValueField="value" optionLabelField="label"/>
+            </div>
+            <div class="whereisit-filter__col">
+                <f:form.button class="whereisit-filter__button" name="submit">Anzeigen</f:form.button>
+            </div>
+            <div class="whereisit-filter__col">
+                <f:link.action action="list" class="whereisit-filter__reset">Reset</f:link.action>
+            </div>
+        </div>
+
+        <f:if condition="{message}">
+            <p>{message}</p>
+        </f:if>
+
+        <f:if condition="{contentElements}">
+            <table class="whereisit-table">
+                <thead>
+                <tr>
+                    <th>Seite</th>
+                    <th>Content</th>
+                    <th>Titel</th>
+                    <th>Link</th>
+                </tr>
+                </thead>
+                <f:for each="{contentElements}" as="contentElement">
+                    <tr>
+                        <td>{contentElement.pid}</td>
+                        <td>{contentElement.uid}</td>
+                        <td>
+                            <f:format.stripTags>{contentElement.header}</f:format.stripTags>
+                        </td>
+                        <td>
+                            <f:link.page pageUid="{contentElement.pid}" section="c{contentElement.uid}">Link
+                            </f:link.page>
+                        </td>
+                    </tr>
+                </f:for>
+            </table>
+            <p>Wenn kein Link ausgegeben wird, dann ist die Seite nicht sichtbar. Wenn beim Link das Element nicht
+                angesprungen ist, dann ist der Container ausgeblendet.</p>
+        </f:if>
+    </f:form>
+</div>

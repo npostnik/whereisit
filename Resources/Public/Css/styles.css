@@ -1,0 +1,32 @@
+.whereisit-filter__row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.whereisit-filter__col {
+    padding: 1rem;
+}
+
+.whereisit-filter__button {
+    border: 1px solid silver;
+    background-color: silver;
+    padding: 0.5rem;
+}
+
+.whereisit-filter__reset {
+    border: 1px solid silver;
+    background-color: white;
+    padding: 0.5rem;
+}
+
+.whereisit {
+    select {
+        border: 1px solid silver;
+        padding: 0.5rem;
+    }
+}
+
+.whereisit-table {
+    margin-bottom: 1rem;
+}
