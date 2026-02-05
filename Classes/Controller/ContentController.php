@@ -3,6 +3,7 @@ namespace Npostnik\Whereisit\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use Npostnik\Whereisit\Domain\Repository\ContentRepository;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class ContentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
@@ -26,18 +27,31 @@ class ContentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         $listTypes = $this->contentRepository->listAllPluginTypes();
         $cTypeOptions = [];
         foreach ($cTypes as $cType) {
+            $label = $this->getLabelForContentElement($cType['CType']);
+            $label.= ' - '.$cType['CType'];
             $cTypeOptions[] = [
-                'label' => $cType['CType'],
+                'label' => $label,
                 'value' => $cType['CType']
             ];
         }
+        $collator = new \Collator('de_DE');
+        // Sort by label
+        usort($cTypeOptions, static function (array $a, array $b) use ($collator): int {
+            return $collator->compare((string)$a['label'], (string)$b['label']);
+        });
         $listTypeOptions = [];
         foreach ($listTypes as $listType) {
+            $label = $this->getLabelForListType($listType['list_type']);
+            $label.= ' - '.$listType['list_type'];
             $listTypeOptions[] = [
-                'label' => $listType['list_type'],
+                'label' => $label,
                 'value' => $listType['list_type']
             ];
         };
+        // Sort by label
+        usort($listTypeOptions, static function (array $a, array $b) use ($collator): int {
+            return $collator->compare((string)$a['label'], (string)$b['label']);
+        });
         $this->view->assign('cTypeOptions', $cTypeOptions);
         $this->view->assign('listTypeOption', $listTypeOptions);
 
@@ -65,6 +79,53 @@ class ContentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
 
         return $this->htmlResponse();
     }
+
+    protected function getLabelForContentElement($cType)
+    {
+        $types = $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'];
+        $label = '';
+        foreach ($types as $type) {
+            if($type['value'] === $cType) {
+                $label = $type['label'];
+            }
+        }
+
+        if(str_starts_with($label, 'LLL')) {
+            return LocalizationUtility::translate($label);
+        }
+
+        if(!empty($label)) {
+            return $label;
+        }
+
+        return $cType;
+    }
+
+    protected function getLabelForListType($listType)
+    {
+        $types = $GLOBALS['TCA']['tt_content']['columns']['list_type']['config']['items'];
+        $label = '';
+        foreach ($types as $type) {
+            if($type['value'] === $listType) {
+                $label = $type['label'];
+            }
+        }
+
+        if(str_starts_with($label, 'LLL:')) {
+            try {
+                return LocalizationUtility::translate($listType);
+            } catch(\Exception $e) {
+                return $listType;
+            }
+        }
+
+        if(!empty($label)) {
+            return $label;
+        }
+
+        return $listType;
+    }
+
 
 
 }
