@@ -3,6 +3,7 @@
       data-namespace-typo3-fluid="true">
 
 <f:asset.css identifier="whereisit" href="EXT:whereisit/Resources/Public/Css/styles.css" />
+<f:asset.script identifier="whereisit-js" src="EXT:whereisit/Resources/Public/JavaScript/whereisit.js" />
 
 <div class="whereisit">
     <f:form action="list" method="post">
@@ -29,31 +30,38 @@
         </f:if>
 
         <f:if condition="{contentElements}">
+            <p>Wenn kein Link ausgegeben wird, dann ist die Seite nicht sichtbar. Wenn beim Link das Element nicht
+                angesprungen ist, dann ist der Container ausgeblendet.</p>
             <table class="whereisit-table table table-striped">
                 <thead>
                 <tr>
-                    <th>Seite</th>
-                    <th>Content</th>
-                    <th>Titel</th>
-                    <th>Link</th>
+                    <th colspan="2">Seite</th>
+                    <th colspan="2">Content</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <f:for each="{contentElements}" as="contentElement">
                     <tr>
                         <td>{contentElement.pid}</td>
+                        <td>
+                            {contentElement.pageTitle}<br />
+                            <small>{contentElement.slug}</small>
+                        </td>
                         <td>{contentElement.uid}</td>
                         <td>
                             <f:format.stripTags>{contentElement.header}</f:format.stripTags>
                         </td>
                         <td>
-                            <f:link.page pageUid="{contentElement.pid}" section="c{contentElement.uid}">Link
+                            <f:link.page pageUid="{contentElement.pid}" section="c{contentElement.uid}"
+                                         target="_blank">Link
                             </f:link.page>
+                        </td>
+                        <td>
+                            <input type="checkbox" />
                         </td>
                     </tr>
                 </f:for>
             </table>
-            <p>Wenn kein Link ausgegeben wird, dann ist die Seite nicht sichtbar. Wenn beim Link das Element nicht
-                angesprungen ist, dann ist der Container ausgeblendet.</p>
         </f:if>
     </f:form>
 </div>

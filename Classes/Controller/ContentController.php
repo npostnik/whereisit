@@ -3,6 +3,7 @@ namespace Npostnik\Whereisit\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use Npostnik\Whereisit\Domain\Repository\ContentRepository;
+use Npostnik\Whereisit\Domain\Repository\PageRepository;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class ContentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
@@ -14,17 +15,37 @@ class ContentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     protected $contentRepository = null;
 
     /**
-     * @param ContentRepository $testimonialRepository
+     * @var PageRepository
+     */
+    protected $pageRepository = null;
+
+    /**
+     * @var array
+     */
+    protected $pages;
+
+    /**
+     * @param ContentRepository $contentRepository
      */
     public function injectContentRepository(ContentRepository $contentRepository)
     {
         $this->contentRepository = $contentRepository;
     }
 
+    /**
+     * @param PageRepository $pageRepository
+     */
+    public function injectPageRepository(PageRepository $pageRepository)
+    {
+        $this->pageRepository = $pageRepository;
+    }
+
     public function listAction(): ResponseInterface
     {
         $cTypes = $this->contentRepository->listAllContentTypes();
         $listTypes = $this->contentRepository->listAllPluginTypes();
+        $this->pages = $this->pageRepository->findAll();
+
         $cTypeOptions = [];
         foreach ($cTypes as $cType) {
             $label = $this->getLabelForContentElement($cType['CType']);
@@ -39,45 +60,39 @@ class ContentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
         usort($cTypeOptions, static function (array $a, array $b) use ($collator): int {
             return $collator->compare((string)$a['label'], (string)$b['label']);
         });
-        $listTypeOptions = [];
-        foreach ($listTypes as $listType) {
-            $label = $this->getLabelForListType($listType['list_type']);
-            $label.= ' - '.$listType['list_type'];
-            $listTypeOptions[] = [
-                'label' => $label,
-                'value' => $listType['list_type']
-            ];
-        };
-        // Sort by label
-        usort($listTypeOptions, static function (array $a, array $b) use ($collator): int {
-            return $collator->compare((string)$a['label'], (string)$b['label']);
-        });
         $this->view->assign('cTypeOptions', $cTypeOptions);
-        $this->view->assign('listTypeOption', $listTypeOptions);
 
         if($this->request->hasArgument('cType')) {
             $selectedCType = $this->request->getArgument('cType');
             $this->view->assign('cType', $selectedCType);
         }
 
-        if($this->request->hasArgument('listType')) {
-            $selectedListType = $this->request->getArgument('listType');
-            $this->view->assign('listType', $selectedListType);
-        }
-
         if(empty($selectedCType) && empty($selectedListType)) {
             $this->view->assign('message', 'Bitte wählen Sie eine Option aus.');
         } elseif(!empty($selectedCType)) {
             $contentElements = $this->contentRepository->findByCType($selectedCType);
-            $this->view->assign('contentElements', $contentElements);
-        } elseif(!empty($selectedListType)) {
-            $contentElements = $this->contentRepository->findByListType($selectedListType);
+            foreach ($contentElements as &$contentElement) {
+                $pageRecord = $this->getPageRecord($contentElement['pid']);
+                if($pageRecord) {
+                    $contentElement['pageTitle'] = $pageRecord['title'];
+                    $contentElement['slug'] = $pageRecord['slug'];
+                }
+            }
             $this->view->assign('contentElements', $contentElements);
         } else {
             $this->view->assign('message', 'Bitte wählen Sie nur eine Option aus.');
         }
 
         return $this->htmlResponse();
+    }
+
+    protected function getPageRecord($pid)
+    {
+        foreach ($this->pages as $page) {
+            if($page['uid'] === $pid) {
+                return $page;
+            }
+        }
     }
 
     protected function getLabelForContentElement($cType)

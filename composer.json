@@ -10,6 +10,7 @@
 		}
 	],
 	"require": {
+        "ext-intl": "*",
 		"typo3/cms-core": "^13.4"
 	},
 	"autoload": {

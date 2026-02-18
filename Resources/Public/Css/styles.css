@@ -43,6 +43,10 @@
 }
 
 .whereisit-table {
+    tr.checked {
+        opacity: 0.3;
+    }
+
     th, td {
     }
 
