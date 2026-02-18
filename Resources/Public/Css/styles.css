@@ -1,32 +1,54 @@
+.whereisit {
+}
+
 .whereisit-filter__row {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+    gap: 1rem;
 }
 
 .whereisit-filter__col {
-    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.whereisit-filter__select {
+    padding: 6px 10px;
 }
 
 .whereisit-filter__button {
-    border: 1px solid silver;
-    background-color: silver;
-    padding: 0.5rem;
+    background: #eee;
+    padding: 10px 20px;
+
+    &:hover {
+        background: silver;
+    }
 }
 
 .whereisit-filter__reset {
-    border: 1px solid silver;
-    background-color: white;
-    padding: 0.5rem;
-}
+    background: #eee;
+    padding: 10px 20px;
 
-.whereisit {
-    select {
-        border: 1px solid silver;
-        padding: 0.5rem;
+    &:hover {
+        background: silver;
     }
 }
 
 .whereisit-table {
-    margin-bottom: 1rem;
+    th, td {
+    }
+
+    th {
+    }
+
+    tr:hover {
+    }
 }

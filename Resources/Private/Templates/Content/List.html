@@ -7,27 +7,20 @@
 <div class="whereisit">
     <f:form action="list" method="post">
         <div class="whereisit-filter__row">
-            <div class="whereisit-filter__col">
+            <div class="whereisit-filter__col whereisit-filter__col--ctype">
                 <label class="form-label">Inhaltselement</label>
                 <f:form.select options="{cTypeOptions}"
+                               class="whereisit-filter__select"
                                name="cType"
                                value="{cType}"
                                prependOptionLabel="Alle" prependOptionValue=""
                                optionValueField="value" optionLabelField="label"/>
             </div>
-            <div class="whereisit-filter__col">
-                <label class="form-label">Plugin</label>
-                <f:form.select options="{listTypeOption}"
-                               name="listType"
-                               value="{listType}"
-                               prependOptionLabel="Alle" prependOptionValue=""
-                               optionValueField="value" optionLabelField="label"/>
+            <div class="whereisit-filter__col whereisit-filter__col--submit">
+                <f:form.button class="whereisit-filter__button btn" name="submit">Anzeigen</f:form.button>
             </div>
-            <div class="whereisit-filter__col">
-                <f:form.button class="whereisit-filter__button" name="submit">Anzeigen</f:form.button>
-            </div>
-            <div class="whereisit-filter__col">
-                <f:link.action action="list" class="whereisit-filter__reset">Reset</f:link.action>
+            <div class="whereisit-filter__col whereisit-filter__col--reset">
+                <f:link.action action="list" class="whereisit-filter__reset btn">Reset</f:link.action>
             </div>
         </div>
 
@@ -36,7 +29,7 @@
         </f:if>
 
         <f:if condition="{contentElements}">
-            <table class="whereisit-table">
+            <table class="whereisit-table table table-striped">
                 <thead>
                 <tr>
                     <th>Seite</th>
