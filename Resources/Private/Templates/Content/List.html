@@ -10,12 +10,21 @@
         <div class="whereisit-filter__row">
             <div class="whereisit-filter__col whereisit-filter__col--ctype">
                 <label class="form-label">Inhaltselement</label>
-                <f:form.select options="{cTypeOptions}"
-                               class="whereisit-filter__select"
+                <f:form.select class="whereisit-filter__select"
                                name="cType"
                                value="{cType}"
                                prependOptionLabel="Alle" prependOptionValue=""
-                               optionValueField="value" optionLabelField="label"/>
+                               optionValueField="value" optionLabelField="label">
+                    <f:for each="{cTypeOptions}" as="group">
+                        <f:form.select.optgroup label="{group.label}">
+                            <f:for each="{group.items}" as="item">
+                                <f:form.select.option value="{item.value}">
+                                    {item.label}
+                                </f:form.select.option>
+                            </f:for>
+                        </f:form.select.optgroup>
+                    </f:for>
+                </f:form.select>
             </div>
             <div class="whereisit-filter__col whereisit-filter__col--submit">
                 <f:form.button class="whereisit-filter__button btn" name="submit">Anzeigen</f:form.button>

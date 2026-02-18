@@ -43,23 +43,9 @@ class ContentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     public function listAction(): ResponseInterface
     {
         $cTypes = $this->contentRepository->listAllContentTypes();
-        $listTypes = $this->contentRepository->listAllPluginTypes();
         $this->pages = $this->pageRepository->findAll();
 
-        $cTypeOptions = [];
-        foreach ($cTypes as $cType) {
-            $label = $this->getLabelForContentElement($cType['CType']);
-            $label.= ' - '.$cType['CType'];
-            $cTypeOptions[] = [
-                'label' => $label,
-                'value' => $cType['CType']
-            ];
-        }
-        $collator = new \Collator('de_DE');
-        // Sort by label
-        usort($cTypeOptions, static function (array $a, array $b) use ($collator): int {
-            return $collator->compare((string)$a['label'], (string)$b['label']);
-        });
+        $cTypeOptions = $this->buildGroupedCTypeOptions($cTypes);
         $this->view->assign('cTypeOptions', $cTypeOptions);
 
         if($this->request->hasArgument('cType')) {
@@ -93,6 +79,73 @@ class ContentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
                 return $page;
             }
         }
+    }
+
+    protected function buildGroupedCTypeOptions(array $cTypes): array
+    {
+        $tcaConfig = $GLOBALS['TCA']['tt_content']['columns']['CType']['config'];
+        $itemGroups = $tcaConfig['itemGroups'] ?? [];
+        $items = $tcaConfig['items'] ?? [];
+
+        // Build lookup: value => group
+        $groupLookup = [];
+        foreach ($items as $item) {
+            if (!empty($item['value'])) {
+                $groupLookup[$item['value']] = $item['group'] ?? '';
+            }
+        }
+
+        // Resolve group labels
+        $groupLabels = [];
+        foreach ($itemGroups as $groupId => $groupLabel) {
+            if (str_starts_with($groupLabel, 'LLL:')) {
+                $groupLabels[$groupId] = LocalizationUtility::translate($groupLabel) ?: $groupId;
+            } else {
+                $groupLabels[$groupId] = $groupLabel;
+            }
+        }
+
+        // Group the actually used CTypes
+        $grouped = [];
+        foreach ($cTypes as $cType) {
+            $value = $cType['CType'];
+            $label = $this->getLabelForContentElement($value);
+            $group = $groupLookup[$value] ?? '';
+
+            if (!isset($grouped[$group])) {
+                $grouped[$group] = [
+                    'label' => $groupLabels[$group] ?? $group ?: 'Sonstige',
+                    'items' => [],
+                ];
+            }
+            $grouped[$group]['items'][] = [
+                'label' => $label . ' - ' . $value,
+                'value' => $value,
+            ];
+        }
+
+        // Sort items within each group
+        $collator = new \Collator('de_DE');
+        foreach ($grouped as &$group) {
+            usort($group['items'], static function (array $a, array $b) use ($collator): int {
+                return $collator->compare((string)$a['label'], (string)$b['label']);
+            });
+        }
+
+        // Sort groups by itemGroups order from TCA
+        $sortedGroups = [];
+        foreach (array_keys($itemGroups) as $groupId) {
+            if (isset($grouped[$groupId])) {
+                $sortedGroups[] = $grouped[$groupId];
+                unset($grouped[$groupId]);
+            }
+        }
+        // Append any remaining groups not defined in itemGroups
+        foreach ($grouped as $group) {
+            $sortedGroups[] = $group;
+        }
+
+        return $sortedGroups;
     }
 
     protected function getLabelForContentElement($cType)
