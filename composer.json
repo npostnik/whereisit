@@ -2,7 +2,7 @@
 	"name": "npostnik/whereisit",
 	"type": "typo3-cms-extension",
 	"description": "Search where on the page content elements are located",
-	"version": "v12.0.0",
+	"version": "v1.0.0",
 	"authors": [
 		{
 			"name": "Natalia Postnikova",
