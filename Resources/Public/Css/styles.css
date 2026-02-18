@@ -15,13 +15,68 @@
     flex-direction: column;
 }
 
+.whereisit-filter__col--ctype {
+    width: 50%;
+}
+
 .form-label {
     font-weight: bold;
     margin-bottom: 0.25rem;
 }
 
+.whereisit-select__search {
+}
+
 .whereisit-filter__select {
     padding: 6px 10px;
+}
+
+.whereisit-select {
+    position: relative;
+}
+
+.whereisit-select__search {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.whereisit-select__dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 350px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    z-index: 100;
+}
+
+.whereisit-select__dropdown--open {
+    display: block;
+}
+
+.whereisit-select__group-label {
+    padding: 6px 10px;
+    font-weight: bold;
+    background: #f0f0f0;
+    font-size: 0.85em;
+    color: #555;
+    position: sticky;
+    top: 0;
+}
+
+.whereisit-select__option {
+    padding: 4px 10px 4px 20px;
+    cursor: pointer;
+}
+
+.whereisit-select__option:hover {
+    background: #e8e8e8;
 }
 
 .whereisit-filter__button {

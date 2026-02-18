@@ -10,21 +10,7 @@
         <div class="whereisit-filter__row">
             <div class="whereisit-filter__col whereisit-filter__col--ctype">
                 <label class="form-label">Inhaltselement</label>
-                <f:form.select class="whereisit-filter__select"
-                               name="cType"
-                               value="{cType}"
-                               prependOptionLabel="Alle" prependOptionValue=""
-                               optionValueField="value" optionLabelField="label">
-                    <f:for each="{cTypeOptions}" as="group">
-                        <f:form.select.optgroup label="{group.label}">
-                            <f:for each="{group.items}" as="item">
-                                <f:form.select.option value="{item.value}">
-                                    {item.label}
-                                </f:form.select.option>
-                            </f:for>
-                        </f:form.select.optgroup>
-                    </f:for>
-                </f:form.select>
+                <f:render section="FilteredInput" arguments="{_all}"/>
             </div>
             <div class="whereisit-filter__col whereisit-filter__col--submit">
                 <f:form.button class="whereisit-filter__button btn" name="submit">Anzeigen</f:form.button>
@@ -74,3 +60,40 @@
         </f:if>
     </f:form>
 </div>
+
+<f:section name="FilteredInput">
+    <div class="whereisit-select" data-whereisit-select>
+        <input type="text" class="whereisit-select__search form-control"
+               placeholder="Tippen zum Filtern..." autocomplete="off" data-whereisit-search />
+        <div class="whereisit-select__dropdown" data-whereisit-dropdown>
+            <div class="whereisit-select__option" data-value="">Alle</div>
+            <f:for each="{cTypeOptions}" as="group">
+                <div class="whereisit-select__group" data-whereisit-group>
+                    <div class="whereisit-select__group-label">{group.label}</div>
+                    <f:for each="{group.items}" as="item">
+                        <div class="whereisit-select__option" data-value="{item.value}">{item.label}</div>
+                    </f:for>
+                </div>
+            </f:for>
+        </div>
+        <f:form.hidden name="cType" value="{cType}" additionalAttributes="{data-whereisit-hidden: '1'}" />
+    </div>
+</f:section>
+
+<f:section name="Select">
+    <f:form.select class="whereisit-filter__select"
+                   name="cType"
+                   value="{cType}"
+                   prependOptionLabel="Alle" prependOptionValue=""
+                   optionValueField="value" optionLabelField="label">
+        <f:for each="{cTypeOptions}" as="group">
+            <f:form.select.optgroup label="{group.label}">
+                <f:for each="{group.items}" as="item">
+                    <f:form.select.option value="{item.value}">
+                        {item.label}
+                    </f:form.select.option>
+                </f:for>
+            </f:form.select.optgroup>
+        </f:for>
+    </f:form.select>
+</f:section>
